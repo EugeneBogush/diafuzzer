@@ -699,6 +699,11 @@ client:
 ```
 ./fuzz.py --local-addresses '127.0.0.1','192.168.1.7' --local-port 3867 client scenarios/S6eugC.scn '127.0.0.1:3869'
 ```
+or
+```
+./unit.py --local-addresses '127.0.0.1','192.168.1.7' --local-port 3867 client scenarios/S6eugC.scn '127.0.0.1:3869'
+```
+
 server:
 ```
 ./unit.py --local-addresses '127.0.0.1','192.168.1.7' --local-port 3869 server scenarios/S6eugS.scn
