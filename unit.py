@@ -54,13 +54,14 @@ if __name__ == '__main__':
   # parse additional argument in client or clientloop modes
   target = None
   if args.mode in ('client', 'clientloop'):
-    if len(args.remote) != 2 or len(args.remote[0]) == 0:
+    if len(args.remote) != 1 or len(args.remote[0]) == 0:
       parser.print_help()
       print >>sys.stderr, 'using client or clientloop modes require to specify target ip port'
       sys.exit(1)
 
     target = args.remote[0]
-    port = int(args.remote[1])
+    (host, port) = target.split(':')
+    port = int(port)
 
   # load scenario
   scenario = load_scenario(args.scenario, args.local_hostname, args.local_realm)
@@ -75,7 +76,7 @@ if __name__ == '__main__':
       else:
         f.bind((ADDR_ANY, args.local_port))
 
-      f.connect((target, port))
+      f.connect((host, port))
 
       (exc_info, msgs) = dwr_handler(scenario, f, args.local_hostname, args.local_realm)
       if exc_info is not None:
