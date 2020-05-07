@@ -2,7 +2,7 @@ def run(f, args={}):
   tsxs = [()]*1
 
   # frame 1
-  m = Msg(R=True, P=False, code=324, app_id=0x1000023, avps=[ # Check IMEI
+  m = Msg(R=True, P=False, code=324, app_id=0x1000024, avps=[ # Check IMEI
     # Session-Id
     Avp(code=263, M=True, vendor=0, data='ilscha99-mme-01.uscc.net;1462984137;650;1.13;71585'),
     # Auth-Session-State
