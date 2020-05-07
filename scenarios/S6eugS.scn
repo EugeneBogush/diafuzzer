@@ -10,7 +10,7 @@ def run(f, args={}):
   session_id = m.eval_path('/code=263').data
 
   # frame 2
-  m = Msg(P=True, code=324, app_id=0x1000023, avps=[ # CHECk IMSI
+  m = Msg(P=True, code=324, app_id=0x1000024, avps=[ # CHECk IMSI
     # Session-Id
     Avp(code=263, M=True, vendor=0, data=session_id),
     # Result-Code
