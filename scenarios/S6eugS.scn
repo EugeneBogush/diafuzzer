@@ -1,0 +1,75 @@
+def run(f, args={}):
+  tsxs = [()]*1
+
+  # frame 1
+  m = Msg.recv(f)
+  assert(m.code == 324)
+  assert(m.R)
+  tsxs[0] = (m.e2e_id, m.h2h_id)
+  destination_realm = m.eval_path('/code=283').data
+  session_id = m.eval_path('/code=263').data
+
+  # frame 2
+  m = Msg(P=True, code=324, app_id=0x1000023, avps=[ # CHECk IMSI
+    # Session-Id
+    Avp(code=263, M=True, vendor=0, data=session_id),
+    # Result-Code
+    Avp(code=268, M=True, vendor=0, u32=2001),
+    # Origin-Host
+    Avp(code=264, M=True, vendor=0, data='NTW-HAYSKS-HSS-01.lte.ntwls.com'),
+    # Origin-Realm
+    Avp(code=296, M=True, vendor=0, data=destination_realm),
+    # Auth-Session-State
+    Avp(code=277, M=True, vendor=0, u32=1),
+    # Vendor-Specific-Application-Id
+    Avp(code=260, M=True, vendor=0, avps=[
+      # Vendor-Id
+      Avp(code=266, M=True, vendor=0, u32=10415),
+      # Auth-Application-Id
+      Avp(code=258, M=True, vendor=0, u32=16777252),
+    ]),
+    #0-white, 1-black, 2-grey
+    Avp(code=1445, V=True, M=False, vendor=10415, u32=0),
+
+  ])
+  (m.e2e_id, m.h2h_id) = tsxs[0]
+  m.send(f)
+
+  f.close()
+
+""" 
+@id	16777252
+@name	S13
+
+@inherits	ietf-avps
+@inherits	3gpp-avps
+
+@messages
+ME-Identity-Check-Request ::= <Diameter Header: 324, REQ, PXY, 16777252>
+      < Session-Id >
+      [ Vendor-Specific-Application-Id ]
+      { Auth-Session-State }
+      { Origin-Host }
+      { Origin-Realm }
+      [ Destination-Host ]
+      { Destination-Realm }
+      { Terminal-Information }
+      [ User-Name ]
+  *   [ AVP ]
+  *   [ Proxy-Info ]
+  *   [ Route-Record ]
+
+ME-Identity-Check-Answer ::= <Diameter Header: 324, PXY, 16777252>
+      < Session-Id >
+      [ Vendor-Specific-Application-Id ]
+      [ Result-Code ]
+      [ Experimental-Result ]
+      { Auth-Session-State } 277
+      { Origin-Host } 264
+      { Origin-Realm } 296
+      [ Equipment-Status ]
+  *   [ AVP ]
+  *   [ Failed-AVP ]
+  *   [ Proxy-Info ]
+  *   [ Route-Record ]
+"""

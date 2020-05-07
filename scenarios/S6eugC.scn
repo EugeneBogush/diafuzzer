@@ -1,0 +1,36 @@
+def run(f, args={}):
+  tsxs = [()]*1
+
+  # frame 1
+  m = Msg(R=True, P=False, code=324, app_id=0x1000023, avps=[ # Check IMEI
+    # Session-Id
+    Avp(code=263, M=True, vendor=0, data='ilscha99-mme-01.uscc.net;1462984137;650;1.13;71585'),
+    # Auth-Session-State
+    Avp(code=277, M=True, vendor=0, u32=1),
+    # Origin-Host
+    Avp(code=264, M=True, vendor=0, data='ilscha99-mme-01.uscc.net'),
+    # Origin-Realm
+    Avp(code=296, M=True, vendor=0, data='uscc.net'),
+    # Destination-Realm
+    Avp(code=283, M=True, vendor=0, data='lte.ntwls.com'),
+    # Terminal-Information
+    Avp(code=1401, V=True, M=True, vendor=10415, avps=[
+      # IMEI
+      Avp(code=1402, V=True, M=False, vendor=10415, data='123456789012345'),
+      # IMSI
+      Avp(code=1403, V=True, M=False, vendor=10415, data='EIR_EUG'),
+    ]),
+    # User-Name
+    Avp(code=1, M=True, vendor=0, data='255050000021337'),
+
+  ])
+  m.send(f)
+  tsxs[0] = (m.e2e_id, m.h2h_id)
+
+  # frame 2
+  m = Msg.recv(f)
+  assert(m.code == 324)
+  assert(not m.R)
+  assert(tsxs[0] == (m.e2e_id, m.h2h_id))
+
+  f.close()
